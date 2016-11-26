@@ -11,6 +11,7 @@ def run(cut_file_path, cut_file, org_file_path, org_file_array, output_name):
         keywords[word[0]] = 0
 
     for file in org_file_array:
+        print("Computing file "+file)
         with open(org_file_path + file, 'r', encoding='UTF-8') as f:
             articles = json.load(f)
         for article in articles["articles"]:
@@ -35,7 +36,7 @@ def run(cut_file_path, cut_file, org_file_path, org_file_array, output_name):
 def appearInDoc(article, keyword):
     title = str(article["article_title"])
     content = str(article["content"])
-    message = str(article["messages"])
+    message_array = article["messages"]
 
     # 找標題
     if keyword in title:
@@ -46,8 +47,9 @@ def appearInDoc(article, keyword):
         return 1
 
     # 找推文
-    if keyword in message:
-        return 1
+    for message_content in message_array:
+        if keyword in message_content["push_content"]:
+            return 1
     return 0
 
 

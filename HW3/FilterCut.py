@@ -1,6 +1,7 @@
 import json
 import jieba.analyse
 import operator
+import datetime
 
 
 jieba.initialize()
@@ -19,26 +20,27 @@ def cut_articles(file_array, output_name, idf_file="NONE"):
     maptable = {}
 
     for file in file_array:
+        print("Computing file " + file + " Date: "+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         with open("JsonOutput/" + file, 'r', encoding='UTF-8') as f:
             array_data = json.load(f)
-            for data in array_data:
-                str_temp = data["article_title"] + "\n" + data["content"] + "\n"
-                for msg in data["messages"]:
-                    str_temp = str_temp + msg["push_content"] + "\n"
+        for data in array_data:
+            str_temp = data["article_title"] + "\n" + data["content"] + "\n"
+            for msg in data["messages"]:
+                str_temp = str_temp + msg["push_content"] + "\n"
 
-                # 存放每篇文章的topK , K目前取20
-                topK = jieba.analyse.extract_tags(str_temp, topK=20, withWeight=True, allowPOS=['n', 'ns', 'nr', 'na'])
+            # 存放每篇文章的topK , K目前取20
+            topK = jieba.analyse.extract_tags(str_temp, topK=20, withWeight=True, allowPOS=['n', 'ns', 'nr', 'na'])
 
-                for topmap in topK:
-                    if topmap[0] in maptable:
-                        maptable[topmap[0]] += topmap[1]
-                    else:
-                        maptable[topmap[0]] = topmap[1]
+            for topmap in topK:
+                if topmap[0] in maptable:
+                    maptable[topmap[0]] += topmap[1]
+                else:
+                    maptable[topmap[0]] = topmap[1]
 
     ans = list(reversed(sorted(maptable.items(), key=operator.itemgetter(1))))
 
     if idf_file == "NONE":
-        with open("Cut/cut-"+output_name+".txt", 'w', encoding='UTF-8') as f:
+        with open("Cut/cut-"+output_name+".json", 'w', encoding='UTF-8') as f:
             # indent=4 代表縮排，排版用
             json.dump(ans, f, indent=4, ensure_ascii=False)
     else:
