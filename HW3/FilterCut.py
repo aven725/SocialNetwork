@@ -46,7 +46,7 @@ def cut_articles(file_array, output_name, idf_file="NONE"):
     else:
         with open("Cut/cut-" + output_name + ".txt", 'w', encoding='UTF-8') as f:
             for word in ans:
-                f.write(str(int(word[1])) + "　" + str(word[0]) + "\n")
+                f.write(str(int(word[1])) + " " + str(word[0]) + "\n")
 
 
 def main():
